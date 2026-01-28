@@ -23,6 +23,7 @@ public class Launch2 {
 //		read(em);
 //		update(em);
 		delete(em);
+		
 
 		em.close();
 		ef.close();
@@ -44,7 +45,7 @@ public class Launch2 {
 
 		transaction.commit();
 		em.close();
-		System.out.println("BULK DATA INSERTED");
+		System.out.println("BULK DATA  IS INSERTED");
 	}
 
 	private static void read(EntityManager em) {
