@@ -10,19 +10,19 @@ import javax.persistence.Query;
 
 import com.entity.Employee;
 
-public class Launch {
+public class Launch2 {
 
-	// NATIVE SQL
+	// JPQL
 
 	public static void main(String[] args) {
 
 		EntityManagerFactory ef = Persistence.createEntityManagerFactory("config");
 		EntityManager em = ef.createEntityManager();
 
-		insert(em);
+//		insert(em);
 //		read(em);
-//		 update(em);
-//		delete(em);
+//		update(em);
+		delete(em);
 
 		em.close();
 		ef.close();
@@ -33,27 +33,25 @@ public class Launch {
 		EntityTransaction transaction = em.getTransaction();
 		transaction.begin();
 
-		String sql = "insert into xemployee(id,name,address,salary) values(?,?,?,?)";
+		for (int i = 1; i <= 10; i++) {
+			Employee employee = new Employee(900 + i, "jpqlname", "jpaladdr", 1000);
+			em.persist(employee);
+			if (i % 5 == 0) {
+				em.flush();
+			}
 
-		for (int i = 1; i <= 3; i++) {
-
-			Query nativeQuery = em.createNativeQuery(sql);
-			nativeQuery.setParameter(1, 101 + i);
-			nativeQuery.setParameter(2, "Rohit");
-			nativeQuery.setParameter(3, "Mumbai");
-			nativeQuery.setParameter(4, 50000 + i);
-			nativeQuery.executeUpdate();
 		}
 
 		transaction.commit();
+		em.close();
 		System.out.println("BULK DATA INSERTED");
 	}
 
 	private static void read(EntityManager em) {
 
-		String sql = "select * from xemployee";
+		String jpql = "select e from Employee e"; // COMPULSORY ALISING
 
-		Query Query = em.createNativeQuery(sql, Employee.class);
+		Query Query = em.createQuery(jpql, Employee.class);
 		List<Employee> list = Query.getResultList();
 		for (Employee e : list) {
 
@@ -66,13 +64,13 @@ public class Launch {
 		EntityTransaction transaction = em.getTransaction();
 		transaction.begin();
 
-		String sql = "update xemployee set salary=? where id>=?";
+		String jpql = "update Employee set esalary=:esalary where id>=:eid";
 
-		Query nativeQuery = em.createNativeQuery(sql);
-		nativeQuery.setParameter(1, 60000);
-		nativeQuery.setParameter(2, 107);
+		Query Query = em.createQuery(jpql);
+		Query.setParameter("esalary", 60000);
+		Query.setParameter("eid", 900);
 
-		nativeQuery.executeUpdate();
+		Query.executeUpdate();
 		System.out.println("BULK DATA UPDATED");
 
 		transaction.commit();
@@ -83,16 +81,16 @@ public class Launch {
 		EntityTransaction transaction = em.getTransaction();
 		transaction.begin();
 
-		String sql = "delete from xemployee where id>=?";
+//		String sql = "delete from Employee where eid>=:eid";
 
-		Query nativeQuery = em.createNativeQuery(sql);
-		nativeQuery.setParameter(1, 107);
+		Query Query = em.createNamedQuery("deleteSQL");
+		Query.setParameter("id", 106);
 
-		nativeQuery.executeUpdate();
+		Query.executeUpdate();
 
 		transaction.commit();
 		System.out.println("BULK DATA DELETED");
-		em.clear();
+		em.close();
 
 	}
 }
